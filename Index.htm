@@ -1,2 +1,427 @@
 
-b27"> ()=>{ alert ()=>{ if(saved)document.getElementById
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#182b27">
+
+<title>HELP ME</title>
+
+<style>
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #f5f4ed;
+  color: #263b34;
+  text-align: center;
+}
+
+header {
+  background: #182b27;
+  color: white;
+  padding: 25px 15px;
+}
+
+header h1 {
+  font-size: 34px;
+  margin: 5px;
+}
+
+main {
+  max-width: 480px;
+  margin: auto;
+  padding: 18px;
+}
+
+.card {
+  background: white;
+  padding: 18px;
+  margin: 16px 0;
+  border-radius: 16px;
+  box-shadow: 0 2px 10px #ddd;
+}
+
+button {
+  width: 100%;
+  padding: 15px;
+  margin: 7px 0;
+  border: none;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.sos {
+  width: 175px;
+  height: 175px;
+  border-radius: 50%;
+  background: #d62935;
+  color: white;
+  font-size: 42px;
+  border: 8px solid #f3baba;
+}
+
+.green {
+  background: #829783;
+  color: white;
+}
+
+.dark {
+  background: #263b34;
+  color: white;
+}
+
+.red {
+  background: #d62935;
+  color: white;
+}
+
+input {
+  width: 100%;
+  padding: 14px;
+  margin: 7px 0;
+  border: 1px solid #bbb;
+  border-radius: 10px;
+  font-size: 16px;
+}
+
+#status {
+  font-weight: bold;
+  margin: 15px;
+}
+
+video {
+  width: 100%;
+  border-radius: 12px;
+  background: #222;
+  margin-top: 10px;
+}
+
+small {
+  color: #777;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <h1>🆘 HELP ME</h1>
+  <p>La tua sicurezza sempre con te</p>
+</header>
+
+<main>
+
+  <h2>Hai bisogno di aiuto?</h2>
+  <p>Un pulsante per chiedere aiuto.</p>
+
+  <button class="sos" onclick="emergency()">
+    SOS
+  </button>
+
+  <div id="status">Sistema pronto</div>
+
+  <div class="card">
+    <h3>📍 La mia posizione</h3>
+
+    <button class="green" onclick="getLocation()">
+      RILEVA POSIZIONE GPS
+    </button>
+
+    <p id="location">
+      Posizione non rilevata
+    </p>
+  </div>
+
+  <div class="card">
+    <h3>❤️ Contatto di emergenza</h3>
+
+    <input
+      id="contact"
+      type="tel"
+      placeholder="Numero di telefono"
+    >
+
+    <button class="green" onclick="saveContact()">
+      SALVA CONTATTO
+    </button>
+
+    <button class="dark" onclick="sendMessage()">
+      INVIA RICHIESTA DI AIUTO
+    </button>
+  </div>
+
+  <div class="card">
+    <h3>📞 Soccorsi</h3>
+
+    <p>Numero unico di emergenza europeo</p>
+
+    <button class="red" onclick="call112()">
+      CHIAMA IL 112
+    </button>
+  </div>
+
+  <div class="card">
+    <h3>🎥 Audio e video</h3>
+
+    <p>
+      La registrazione richiede il tuo consenso
+      e l'autorizzazione della fotocamera e del microfono.
+    </p>
+
+    <button class="green" onclick="startRecording()">
+      AVVIA REGISTRAZIONE
+    </button>
+
+    <video id="camera" autoplay muted playsinline></video>
+
+    <button class="red" onclick="stopRecording()">
+      FERMA REGISTRAZIONE
+    </button>
+
+    <p id="recordStatus">
+      Registrazione non attiva
+    </p>
+
+    <a id="download" hidden>
+      Scarica registrazione
+    </a>
+  </div>
+
+  <small>
+    HELP ME - Prototipo di sicurezza personale.
+    Non sostituisce i servizi di emergenza.
+  </small>
+
+</main>
+
+<script>
+
+let latitude = null;
+let longitude = null;
+let stream = null;
+let recorder = null;
+let chunks = [];
+
+function updateStatus(message) {
+  document.getElementById("status").textContent = message;
+}
+
+function emergency() {
+
+  if (!confirm("Vuoi attivare la procedura SOS?")) {
+    return;
+  }
+
+  updateStatus("PROCEDURA SOS ATTIVATA!");
+
+  if (navigator.vibrate) {
+    navigator.vibrate([300, 100, 300]);
+  }
+
+  getLocation();
+
+}
+
+function getLocation() {
+
+  if (!navigator.geolocation) {
+    alert("GPS non disponibile.");
+    return;
+  }
+
+  updateStatus("Ricerca posizione in corso...");
+
+  navigator.geolocation.getCurrentPosition(
+
+    function(position) {
+
+      latitude = position.coords.latitude;
+      longitude = position.coords.longitude;
+
+      const link =
+        "https://maps.google.com/?q=" +
+        latitude + "," + longitude;
+
+      document.getElementById("location").innerHTML =
+        '<a target="_blank" rel="noopener" href="' +
+        link + '">VEDI LA MIA POSIZIONE</a>';
+
+      updateStatus("Posizione GPS rilevata!");
+
+    },
+
+    function() {
+      updateStatus("Impossibile rilevare la posizione.");
+      alert("Controlla che il GPS sia attivo e autorizzato.");
+    },
+
+    {
+      enableHighAccuracy: true,
+      timeout: 15000
+    }
+
+  );
+
+}
+
+function saveContact() {
+
+  const number =
+    document.getElementById("contact").value.trim();
+
+  if (!number) {
+    alert("Inserisci un numero di telefono.");
+    return;
+  }
+
+  localStorage.setItem("helpme_contact", number);
+
+  alert("Contatto salvato!");
+
+}
+
+window.addEventListener("load", function() {
+
+  const saved =
+    localStorage.getItem("helpme_contact");
+
+  if (saved) {
+    document.getElementById("contact").value = saved;
+  }
+
+});
+
+function sendMessage() {
+
+  const number =
+    document.getElementById("contact").value.trim();
+
+  if (!number) {
+    alert("Inserisci prima un contatto.");
+    return;
+  }
+
+  let message = "HO BISOGNO DI AIUTO!";
+
+  if (latitude !== null && longitude !== null) {
+
+    message +=
+      " La mia posizione: https://maps.google.com/?q=" +
+      latitude + "," + longitude;
+
+  }
+
+  if (!confirm("Vuoi aprire i messaggi per inviare l'SOS?")) {
+    return;
+  }
+
+  window.location.href =
+    "sms:" + number +
+    "?body=" + encodeURIComponent(message);
+
+}
+
+function call112() {
+
+  if (confirm("ATTENZIONE: vuoi chiamare il 112?")) {
+    window.location.href = "tel:112";
+  }
+
+}
+
+async function startRecording() {
+
+  if (!navigator.mediaDevices ||
+      !navigator.mediaDevices.getUserMedia ||
+      !window.MediaRecorder) {
+
+    alert("Registrazione non supportata da questo browser.");
+    return;
+
+  }
+
+  try {
+
+    stream = await navigator.mediaDevices.getUserMedia({
+      audio: true,
+      video: true
+    });
+
+    document.getElementById("camera").srcObject = stream;
+
+    chunks = [];
+
+    recorder = new MediaRecorder(stream);
+
+    recorder.ondataavailable = function(event) {
+
+      if (event.data.size > 0) {
+        chunks.push(event.data);
+      }
+
+    };
+
+    recorder.onstop = function() {
+
+      const blob = new Blob(chunks, {
+        type: recorder.mimeType
+      });
+
+      const url = URL.createObjectURL(blob);
+
+      const link = document.getElementById("download");
+
+      link.href = url;
+      link.download = "help-me-registrazione.webm";
+      link.hidden = false;
+      link.textContent = "SCARICA IL VIDEO";
+
+      document.getElementById("recordStatus").textContent =
+        "Registrazione terminata e pronta da scaricare.";
+
+    };
+
+    recorder.start();
+
+    document.getElementById("recordStatus").textContent =
+      "REGISTRAZIONE IN CORSO";
+
+  } catch (error) {
+
+    alert("Non è stato possibile accedere alla fotocamera o al microfono.");
+
+  }
+
+}
+
+function stopRecording() {
+
+  if (recorder && recorder.state !== "inactive") {
+    recorder.stop();
+  }
+
+  if (stream) {
+
+    stream.getTracks().forEach(function(track) {
+      track.stop();
+    });
+
+    stream = null;
+
+  }
+
+  document.getElementById("camera").srcObject = null;
+
+}
+
+</script>
+
+</body>
+</html>
