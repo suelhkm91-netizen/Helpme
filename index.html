@@ -5,13 +5,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#182b27">
-
 <title>HELP ME</title>
-
 <style>
-* {
-  box-sizing: border-box;
-}
+* { box-sizing: border-box; }
 
 body {
   margin: 0;
@@ -27,10 +23,7 @@ header {
   padding: 25px 15px;
 }
 
-header h1 {
-  font-size: 34px;
-  margin: 5px;
-}
+header h1 { font-size: 34px; margin: 5px; }
 
 main {
   max-width: 480px;
@@ -57,6 +50,8 @@ button {
   cursor: pointer;
 }
 
+button:disabled { opacity: .5; }
+
 .sos {
   width: 175px;
   height: 175px;
@@ -67,20 +62,9 @@ button {
   border: 8px solid #f3baba;
 }
 
-.green {
-  background: #829783;
-  color: white;
-}
-
-.dark {
-  background: #263b34;
-  color: white;
-}
-
-.red {
-  background: #d62935;
-  color: white;
-}
+.green { background: #829783; color: white; }
+.dark { background: #263b34; color: white; }
+.red { background: #d62935; color: white; }
 
 input {
   width: 100%;
@@ -91,10 +75,12 @@ input {
   font-size: 16px;
 }
 
-#status {
+#status, #voiceStatus {
   font-weight: bold;
   margin: 15px;
 }
+
+#voiceStatus { color: #829783; }
 
 video {
   width: 100%;
@@ -103,8 +89,12 @@ video {
   margin-top: 10px;
 }
 
-small {
+small { color: #777; }
+
+.notice {
+  font-size: 13px;
   color: #777;
+  line-height: 1.5;
 }
 </style>
 </head>
@@ -118,119 +108,131 @@ small {
 
 <main>
 
-  <h2>Hai bisogno di aiuto?</h2>
-  <p>Un pulsante per chiedere aiuto.</p>
+<h2>Hai bisogno di aiuto?</h2>
+<p>Un pulsante per chiedere aiuto.</p>
 
-  <button class="sos" onclick="emergency()">
-    SOS
+<button class="sos" onclick="emergency()">
+SOS
+</button>
+
+<div id="status">Sistema pronto</div>
+
+<div class="card">
+  <h3>🎙️ SOS VOCALE</h3>
+  <p>Pronuncia chiaramente:</p>
+  <h2>«AIUTO, AIUTO»</h2>
+
+  <button class="green" id="voiceButton"
+    onclick="startVoice()">
+    ATTIVA ASCOLTO VOCALE
   </button>
 
-  <div id="status">Sistema pronto</div>
+  <button class="dark" onclick="stopVoice()">
+    DISATTIVA ASCOLTO
+  </button>
 
-  <div class="card">
-    <h3>📍 La mia posizione</h3>
+  <p id="voiceStatus">Ascolto non attivo</p>
 
-    <button class="green" onclick="getLocation()">
-      RILEVA POSIZIONE GPS
-    </button>
+  <p class="notice">
+    L'ascolto richiede il microfono autorizzato,
+    una connessione e la pagina aperta.
+    Il riconoscimento vocale dipende dal browser.
+  </p>
+</div>
 
-    <p id="location">
-      Posizione non rilevata
-    </p>
-  </div>
+<div class="card">
+  <h3>📍 La mia posizione</h3>
+  <button class="green" onclick="getLocation()">
+    RILEVA POSIZIONE GPS
+  </button>
+  <p id="location">Posizione non rilevata</p>
+</div>
 
-  <div class="card">
-    <h3>❤️ Contatto di emergenza</h3>
+<div class="card">
+  <h3>❤️ Contatto di emergenza</h3>
 
-    <input
-      id="contact"
-      type="tel"
-      placeholder="Numero di telefono"
-    >
+  <input id="contact" type="tel"
+    placeholder="Numero di telefono">
 
-    <button class="green" onclick="saveContact()">
-      SALVA CONTATTO
-    </button>
+  <button class="green" onclick="saveContact()">
+    SALVA CONTATTO
+  </button>
 
-    <button class="dark" onclick="sendMessage()">
-      INVIA RICHIESTA DI AIUTO
-    </button>
-  </div>
+  <button class="dark" onclick="sendMessage()">
+    INVIA RICHIESTA DI AIUTO
+  </button>
+</div>
 
-  <div class="card">
-    <h3>📞 Soccorsi</h3>
+<div class="card">
+  <h3>📞 Soccorsi</h3>
+  <p>Numero unico di emergenza europeo</p>
 
-    <p>Numero unico di emergenza europeo</p>
+  <button class="red" onclick="call112()">
+    CHIAMA IL 112
+  </button>
+</div>
 
-    <button class="red" onclick="call112()">
-      CHIAMA IL 112
-    </button>
-  </div>
+<div class="card">
+  <h3>🎥 Audio e video</h3>
 
-  <div class="card">
-    <h3>🎥 Audio e video</h3>
+  <p>
+    La registrazione richiede il tuo consenso
+    e l'autorizzazione della fotocamera e del microfono.
+  </p>
 
-    <p>
-      La registrazione richiede il tuo consenso
-      e l'autorizzazione della fotocamera e del microfono.
-    </p>
+  <button class="green" onclick="startRecording()">
+    AVVIA REGISTRAZIONE
+  </button>
 
-    <button class="green" onclick="startRecording()">
-      AVVIA REGISTRAZIONE
-    </button>
+  <video id="camera" autoplay muted playsinline></video>
 
-    <video id="camera" autoplay muted playsinline></video>
+  <button class="red" onclick="stopRecording()">
+    FERMA REGISTRAZIONE
+  </button>
 
-    <button class="red" onclick="stopRecording()">
-      FERMA REGISTRAZIONE
-    </button>
+  <p id="recordStatus">Registrazione non attiva</p>
+  <a id="download" hidden>Scarica registrazione</a>
+</div>
 
-    <p id="recordStatus">
-      Registrazione non attiva
-    </p>
-
-    <a id="download" hidden>
-      Scarica registrazione
-    </a>
-  </div>
-
-  <small>
-    HELP ME - Prototipo di sicurezza personale.
-    Non sostituisce i servizi di emergenza.
-  </small>
+<small>
+HELP ME - Prototipo di sicurezza personale.
+Non sostituisce i servizi di emergenza.
+</small>
 
 </main>
 
 <script>
-
 let latitude = null;
 let longitude = null;
 let stream = null;
 let recorder = null;
 let chunks = [];
 
+let recognition = null;
+let voiceActive = false;
+let voiceTriggered = false;
+
 function updateStatus(message) {
   document.getElementById("status").textContent = message;
 }
 
 function emergency() {
+  if (!confirm("Vuoi attivare la procedura SOS?")) return;
 
-  if (!confirm("Vuoi attivare la procedura SOS?")) {
-    return;
-  }
+  activateSOS();
+}
 
-  updateStatus("PROCEDURA SOS ATTIVATA!");
+function activateSOS() {
+  updateStatus("🆘 PROCEDURA SOS ATTIVATA!");
 
   if (navigator.vibrate) {
-    navigator.vibrate([300, 100, 300]);
+    navigator.vibrate([300, 100, 300, 100, 300]);
   }
 
   getLocation();
-
 }
 
 function getLocation() {
-
   if (!navigator.geolocation) {
     alert("GPS non disponibile.");
     return;
@@ -239,9 +241,7 @@ function getLocation() {
   updateStatus("Ricerca posizione in corso...");
 
   navigator.geolocation.getCurrentPosition(
-
     function(position) {
-
       latitude = position.coords.latitude;
       longitude = position.coords.longitude;
 
@@ -249,32 +249,29 @@ function getLocation() {
         "https://maps.google.com/?q=" +
         latitude + "," + longitude;
 
-      document.getElementById("location").innerHTML =
-        '<a target="_blank" rel="noopener" href="' +
-        link + '">VEDI LA MIA POSIZIONE</a>';
+      const location = document.getElementById("location");
+      location.textContent = "";
+
+      const anchor = document.createElement("a");
+      anchor.href = link;
+      anchor.target = "_blank";
+      anchor.rel = "noopener";
+      anchor.textContent = "VEDI LA MIA POSIZIONE";
+
+      location.appendChild(anchor);
 
       updateStatus("Posizione GPS rilevata!");
-
     },
-
     function() {
       updateStatus("Impossibile rilevare la posizione.");
       alert("Controlla che il GPS sia attivo e autorizzato.");
     },
-
-    {
-      enableHighAccuracy: true,
-      timeout: 15000
-    }
-
+    { enableHighAccuracy: true, timeout: 15000 }
   );
-
 }
 
 function saveContact() {
-
-  const number =
-    document.getElementById("contact").value.trim();
+  const number = document.getElementById("contact").value.trim();
 
   if (!number) {
     alert("Inserisci un numero di telefono.");
@@ -282,26 +279,19 @@ function saveContact() {
   }
 
   localStorage.setItem("helpme_contact", number);
-
   alert("Contatto salvato!");
-
 }
 
 window.addEventListener("load", function() {
-
-  const saved =
-    localStorage.getItem("helpme_contact");
+  const saved = localStorage.getItem("helpme_contact");
 
   if (saved) {
     document.getElementById("contact").value = saved;
   }
-
 });
 
 function sendMessage() {
-
-  const number =
-    document.getElementById("contact").value.trim();
+  const number = document.getElementById("contact").value.trim();
 
   if (!number) {
     alert("Inserisci prima un contatto.");
@@ -311,71 +301,150 @@ function sendMessage() {
   let message = "HO BISOGNO DI AIUTO!";
 
   if (latitude !== null && longitude !== null) {
-
     message +=
       " La mia posizione: https://maps.google.com/?q=" +
       latitude + "," + longitude;
-
   }
 
-  if (!confirm("Vuoi aprire i messaggi per inviare l'SOS?")) {
-    return;
-  }
+  if (!confirm("Vuoi aprire i messaggi per inviare l'SOS?")) return;
 
   window.location.href =
-    "sms:" + number +
-    "?body=" + encodeURIComponent(message);
-
+    "sms:" + number + "?body=" + encodeURIComponent(message);
 }
 
 function call112() {
-
   if (confirm("ATTENZIONE: vuoi chiamare il 112?")) {
     window.location.href = "tel:112";
   }
-
 }
 
-async function startRecording() {
+/* RICONOSCIMENTO VOCALE */
 
+function startVoice() {
+  const SpeechRecognition =
+    window.SpeechRecognition ||
+    window.webkitSpeechRecognition;
+
+  if (!SpeechRecognition) {
+    alert("Il tuo browser non supporta il riconoscimento vocale. Prova con Chrome aggiornato.");
+    return;
+  }
+
+  if (voiceActive) return;
+
+  voiceTriggered = false;
+  recognition = new SpeechRecognition();
+
+  recognition.lang = "it-IT";
+  recognition.continuous = true;
+  recognition.interimResults = false;
+
+  recognition.onstart = function() {
+    voiceActive = true;
+    document.getElementById("voiceStatus").textContent =
+      "🟢 ASCOLTO ATTIVO: pronuncia AIUTO, AIUTO";
+  };
+
+  recognition.onresult = function(event) {
+    for (let i = event.resultIndex; i < event.results.length; i++) {
+      if (!event.results[i].isFinal) continue;
+
+      const words = event.results[i][0].transcript
+        .toLowerCase()
+        .replace(/[.,!?;:]/g, " ")
+        .trim();
+
+      if (
+        /\baiuto\b[\s,]+\baiuto\b/.test(words) &&
+        !voiceTriggered
+      ) {
+        voiceTriggered = true;
+
+        document.getElementById("voiceStatus").textContent =
+          "🆘 RICHIESTA SOS VOCALE RILEVATA";
+
+        activateSOS();
+
+        document.getElementById("voiceStatus").textContent =
+          "SOS attivato. Verifica la posizione e invia il messaggio al contatto.";
+      }
+    }
+  };
+
+  recognition.onerror = function(event) {
+    document.getElementById("voiceStatus").textContent =
+      "Errore ascolto: " + event.error;
+
+    if (event.error === "not-allowed" ||
+        event.error === "service-not-allowed") {
+      stopVoice();
+    }
+  };
+
+  recognition.onend = function() {
+    if (voiceActive && recognition) {
+      try {
+        recognition.start();
+      } catch (error) {
+        document.getElementById("voiceStatus").textContent =
+          "Ascolto interrotto. Riattivalo.";
+        voiceActive = false;
+      }
+    }
+  };
+
+  try {
+    recognition.start();
+  } catch (error) {
+    document.getElementById("voiceStatus").textContent =
+      "Impossibile avviare l'ascolto.";
+  }
+}
+
+function stopVoice() {
+  voiceActive = false;
+
+  if (recognition) {
+    recognition.onend = null;
+    recognition.stop();
+    recognition = null;
+  }
+
+  document.getElementById("voiceStatus").textContent =
+    "Ascolto disattivato";
+}
+
+/* REGISTRAZIONE AUDIO E VIDEO */
+
+async function startRecording() {
   if (!navigator.mediaDevices ||
       !navigator.mediaDevices.getUserMedia ||
       !window.MediaRecorder) {
-
     alert("Registrazione non supportata da questo browser.");
     return;
-
   }
 
   try {
-
     stream = await navigator.mediaDevices.getUserMedia({
       audio: true,
       video: true
     });
 
     document.getElementById("camera").srcObject = stream;
-
     chunks = [];
 
     recorder = new MediaRecorder(stream);
 
     recorder.ondataavailable = function(event) {
-
-      if (event.data.size > 0) {
-        chunks.push(event.data);
-      }
-
+      if (event.data.size > 0) chunks.push(event.data);
     };
 
     recorder.onstop = function() {
-
       const blob = new Blob(chunks, {
         type: recorder.mimeType
       });
 
       const url = URL.createObjectURL(blob);
-
       const link = document.getElementById("download");
 
       link.href = url;
@@ -385,7 +454,6 @@ async function startRecording() {
 
       document.getElementById("recordStatus").textContent =
         "Registrazione terminata e pronta da scaricare.";
-
     };
 
     recorder.start();
@@ -394,33 +462,22 @@ async function startRecording() {
       "REGISTRAZIONE IN CORSO";
 
   } catch (error) {
-
     alert("Non è stato possibile accedere alla fotocamera o al microfono.");
-
   }
-
 }
 
 function stopRecording() {
-
   if (recorder && recorder.state !== "inactive") {
     recorder.stop();
   }
 
   if (stream) {
-
-    stream.getTracks().forEach(function(track) {
-      track.stop();
-    });
-
+    stream.getTracks().forEach(track => track.stop());
     stream = null;
-
   }
 
   document.getElementById("camera").srcObject = null;
-
 }
-
 </script>
 
 </body>
